@@ -1,8 +1,9 @@
 from rest_framework import viewsets, status
 from rest_framework.decorators import action, api_view, permission_classes
-from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.db.models import ProtectedError
+
+from core.services.dashboard_service import DashboardService
 from .models import Company, Department, Employee
 from .serializers import (
     CompanySerializer,
@@ -409,21 +410,7 @@ class EmployeeViewSet(viewsets.ModelViewSet):
 def dashboard_summary(request):
     """Get summary statistics for dashboard"""
     try:
-        data = {
-            "total_companies": Company.objects.count(),
-            "total_departments": Department.objects.count(),
-            "total_employees": Employee.objects.count(),
-            "hired_employees": Employee.objects.filter(employee_status="hired").count(),
-            "pending_applications": Employee.objects.filter(
-                employee_status="application_received"
-            ).count(),
-            "scheduled_interviews": Employee.objects.filter(
-                employee_status="interview_scheduled"
-            ).count(),
-            "not_selected_employees": Employee.objects.filter(
-                employee_status="not_accepted"
-            ).count(),
-        }
+        data = DashboardService.get_summary()
         logger.info(f"Dashboard accessed by {request.user.email}")
         return CustomResponse(data, status=status.HTTP_200_OK)
     except Exception as e:

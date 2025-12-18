@@ -12,9 +12,9 @@ urlpatterns = [
 API Endpoints Documentation:
 
 Authentication:
-- POST   /api/auth/register/          - Register new user
-- POST   /api/auth/login/             - Login user (returns JWT tokens)
-- GET    /api/auth/user/              - Get current authenticated user
+- POST   accounts/api/register/          - Register new user
+- POST   accounts/api/login/             - Login user (returns JWT tokens)
+- GET    accounts/api/user/              - Get current authenticated user
 
 Companies:
 - GET    /api/companies/              - List all companies
