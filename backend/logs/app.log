@@ -1,0 +1,129 @@
+INFO 2025-12-19 21:02:00,169 autoreload Watching for file changes with StatReloader
+ERROR 2025-12-19 21:02:08,436 views Login error: {'non_field_errors': [ErrorDetail(string='Invalid credentials', code='invalid')]}
+WARNING 2025-12-19 21:02:08,438 log Bad Request: /accounts/api/login/
+WARNING 2025-12-19 21:02:08,439 log "POST /accounts/api/login/ HTTP/1.1" 400 125
+ERROR 2025-12-19 21:02:15,010 views Login error: {'non_field_errors': [ErrorDetail(string='Invalid credentials', code='invalid')]}
+WARNING 2025-12-19 21:02:15,011 log Bad Request: /accounts/api/login/
+WARNING 2025-12-19 21:02:15,012 log "POST /accounts/api/login/ HTTP/1.1" 400 125
+INFO 2025-12-19 21:02:21,903 views User logged in: my552915@gmail.com
+INFO 2025-12-19 21:02:21,913 log "POST /accounts/api/login/ HTTP/1.1" 200 687
+INFO 2025-12-19 21:02:22,004 log "GET /accounts/api/user/ HTTP/1.1" 200 170
+INFO 2025-12-19 21:02:22,009 log "GET /accounts/api/user/ HTTP/1.1" 200 170
+INFO 2025-12-19 21:02:22,034 log "GET /accounts/api/user/ HTTP/1.1" 200 170
+INFO 2025-12-19 21:02:22,038 log "GET /accounts/api/user/ HTTP/1.1" 200 170
+INFO 2025-12-19 21:02:24,408 views Dashboard accessed by my552915@gmail.com
+INFO 2025-12-19 21:02:24,409 log "GET /api/dashboard/ HTTP/1.1" 200 207
+INFO 2025-12-19 21:02:24,413 views Dashboard accessed by my552915@gmail.com
+INFO 2025-12-19 21:02:24,414 log "GET /api/dashboard/ HTTP/1.1" 200 207
+INFO 2025-12-19 21:02:24,945 views Companies listed by user: my552915@gmail.com
+INFO 2025-12-19 21:02:24,954 log "GET /api/companies/ HTTP/1.1" 200 216
+INFO 2025-12-19 21:02:24,956 views Companies listed by user: my552915@gmail.com
+INFO 2025-12-19 21:02:24,959 log "GET /api/companies/ HTTP/1.1" 200 216
+INFO 2025-12-19 21:02:25,614 views Dashboard accessed by my552915@gmail.com
+INFO 2025-12-19 21:02:25,614 log "GET /api/dashboard/ HTTP/1.1" 200 207
+INFO 2025-12-19 21:02:25,618 views Dashboard accessed by my552915@gmail.com
+INFO 2025-12-19 21:02:25,619 log "GET /api/dashboard/ HTTP/1.1" 200 207
+INFO 2025-12-19 21:02:29,912 views Companies listed by user: my552915@gmail.com
+INFO 2025-12-19 21:02:29,920 log "GET /api/companies/ HTTP/1.1" 200 216
+INFO 2025-12-19 21:02:29,920 log "GET /api/departments/? HTTP/1.1" 200 405
+INFO 2025-12-19 21:02:29,927 views Companies listed by user: my552915@gmail.com
+INFO 2025-12-19 21:02:29,931 log "GET /api/employees/? HTTP/1.1" 200 1232
+INFO 2025-12-19 21:02:29,934 log "GET /api/companies/ HTTP/1.1" 200 216
+INFO 2025-12-19 21:02:29,940 log "GET /api/departments/? HTTP/1.1" 200 405
+INFO 2025-12-19 21:02:29,943 log "GET /api/employees/? HTTP/1.1" 200 1232
+INFO 2025-12-19 21:02:31,198 views Companies listed by user: my552915@gmail.com
+INFO 2025-12-19 21:02:31,203 log "GET /api/departments/? HTTP/1.1" 200 405
+INFO 2025-12-19 21:02:31,206 log "GET /api/companies/ HTTP/1.1" 200 216
+INFO 2025-12-19 21:02:31,210 views Companies listed by user: my552915@gmail.com
+INFO 2025-12-19 21:02:31,210 log "GET /api/departments/? HTTP/1.1" 200 405
+INFO 2025-12-19 21:02:31,213 log "GET /api/companies/ HTTP/1.1" 200 216
+INFO 2025-12-19 21:02:34,642 views Companies listed by user: my552915@gmail.com
+INFO 2025-12-19 21:02:34,645 log "GET /api/companies/ HTTP/1.1" 200 216
+INFO 2025-12-19 21:02:37,855 views Companies listed by user: my552915@gmail.com
+INFO 2025-12-19 21:02:37,858 log "GET /api/companies/ HTTP/1.1" 200 216
+INFO 2025-12-19 21:02:40,045 log "GET /api/departments/3/ HTTP/1.1" 200 920
+INFO 2025-12-19 21:02:40,053 log "GET /api/departments/3/ HTTP/1.1" 200 920
+INFO 2025-12-19 21:02:43,061 views Companies listed by user: my552915@gmail.com
+INFO 2025-12-19 21:02:43,067 log "GET /api/employees/? HTTP/1.1" 200 1232
+INFO 2025-12-19 21:02:43,067 log "GET /api/companies/ HTTP/1.1" 200 216
+INFO 2025-12-19 21:02:43,067 log "GET /api/departments/? HTTP/1.1" 200 405
+INFO 2025-12-19 21:02:43,072 views Companies listed by user: my552915@gmail.com
+INFO 2025-12-19 21:02:43,078 log "GET /api/departments/? HTTP/1.1" 200 405
+INFO 2025-12-19 21:02:43,078 log "GET /api/employees/? HTTP/1.1" 200 1232
+INFO 2025-12-19 21:02:43,079 log "GET /api/companies/ HTTP/1.1" 200 216
+INFO 2025-12-19 21:02:45,646 log "OPTIONS /api/employees/6/ HTTP/1.1" 200 0
+INFO 2025-12-19 21:02:45,647 log "OPTIONS /api/employees/6/ HTTP/1.1" 200 0
+INFO 2025-12-19 21:02:45,657 log "GET /api/employees/6/ HTTP/1.1" 200 443
+INFO 2025-12-19 21:02:45,662 log "GET /api/employees/6/ HTTP/1.1" 200 443
+INFO 2025-12-19 21:02:51,360 views Companies listed by user: my552915@gmail.com
+INFO 2025-12-19 21:02:51,367 log "GET /api/employees/? HTTP/1.1" 200 1232
+INFO 2025-12-19 21:02:51,367 log "GET /api/departments/? HTTP/1.1" 200 405
+INFO 2025-12-19 21:02:51,367 log "GET /api/companies/ HTTP/1.1" 200 216
+INFO 2025-12-19 21:02:51,372 views Companies listed by user: my552915@gmail.com
+INFO 2025-12-19 21:02:51,373 log "GET /api/employees/? HTTP/1.1" 200 1232
+INFO 2025-12-19 21:02:51,378 log "GET /api/companies/ HTTP/1.1" 200 216
+INFO 2025-12-19 21:02:51,378 log "GET /api/departments/? HTTP/1.1" 200 405
+INFO 2025-12-19 21:02:53,353 views Companies listed by user: my552915@gmail.com
+INFO 2025-12-19 21:02:53,359 log "GET /api/departments/? HTTP/1.1" 200 405
+INFO 2025-12-19 21:02:53,359 log "GET /api/companies/ HTTP/1.1" 200 216
+INFO 2025-12-19 21:02:53,363 views Companies listed by user: my552915@gmail.com
+INFO 2025-12-19 21:02:53,366 log "GET /api/departments/? HTTP/1.1" 200 405
+INFO 2025-12-19 21:02:53,367 log "GET /api/companies/ HTTP/1.1" 200 216
+INFO 2025-12-19 21:02:55,528 views Companies listed by user: my552915@gmail.com
+INFO 2025-12-19 21:02:55,530 log "GET /api/companies/ HTTP/1.1" 200 216
+INFO 2025-12-19 21:02:55,533 views Companies listed by user: my552915@gmail.com
+INFO 2025-12-19 21:02:55,535 log "GET /api/companies/ HTTP/1.1" 200 216
+INFO 2025-12-19 21:02:56,609 views Companies listed by user: my552915@gmail.com
+INFO 2025-12-19 21:02:56,613 log "GET /api/departments/? HTTP/1.1" 200 405
+INFO 2025-12-19 21:02:56,614 log "GET /api/companies/ HTTP/1.1" 200 216
+INFO 2025-12-19 21:02:56,619 views Companies listed by user: my552915@gmail.com
+INFO 2025-12-19 21:02:56,621 log "GET /api/departments/? HTTP/1.1" 200 405
+INFO 2025-12-19 21:02:56,622 log "GET /api/companies/ HTTP/1.1" 200 216
+INFO 2025-12-19 21:02:58,042 log "GET /api/departments/5/ HTTP/1.1" 200 585
+INFO 2025-12-19 21:02:58,047 log "GET /api/departments/5/ HTTP/1.1" 200 585
+INFO 2025-12-19 21:02:59,126 views Companies listed by user: my552915@gmail.com
+INFO 2025-12-19 21:02:59,130 log "GET /api/departments/? HTTP/1.1" 200 405
+INFO 2025-12-19 21:02:59,132 log "GET /api/companies/ HTTP/1.1" 200 216
+INFO 2025-12-19 21:02:59,136 views Companies listed by user: my552915@gmail.com
+INFO 2025-12-19 21:02:59,142 log "GET /api/departments/? HTTP/1.1" 200 405
+INFO 2025-12-19 21:02:59,143 log "GET /api/companies/ HTTP/1.1" 200 216
+INFO 2025-12-19 21:03:01,974 log "GET /api/departments/5/ HTTP/1.1" 200 585
+INFO 2025-12-19 21:03:01,979 log "GET /api/departments/5/ HTTP/1.1" 200 585
+INFO 2025-12-19 21:03:03,342 views Companies listed by user: my552915@gmail.com
+INFO 2025-12-19 21:03:03,346 log "GET /api/departments/? HTTP/1.1" 200 405
+INFO 2025-12-19 21:03:03,347 log "GET /api/companies/ HTTP/1.1" 200 216
+INFO 2025-12-19 21:03:03,351 views Companies listed by user: my552915@gmail.com
+INFO 2025-12-19 21:03:03,355 log "GET /api/departments/? HTTP/1.1" 200 405
+INFO 2025-12-19 21:03:03,355 log "GET /api/companies/ HTTP/1.1" 200 216
+INFO 2025-12-19 21:03:06,287 log "GET /api/departments/5/ HTTP/1.1" 200 585
+INFO 2025-12-19 21:03:06,295 log "GET /api/departments/5/ HTTP/1.1" 200 585
+INFO 2025-12-19 21:03:09,359 views Companies listed by user: my552915@gmail.com
+INFO 2025-12-19 21:03:09,360 log "GET /api/departments/? HTTP/1.1" 200 405
+INFO 2025-12-19 21:03:09,364 log "GET /api/companies/ HTTP/1.1" 200 216
+INFO 2025-12-19 21:03:09,367 views Companies listed by user: my552915@gmail.com
+INFO 2025-12-19 21:03:09,368 log "GET /api/departments/? HTTP/1.1" 200 405
+INFO 2025-12-19 21:03:09,370 log "GET /api/companies/ HTTP/1.1" 200 216
+INFO 2025-12-19 21:03:11,447 views Companies listed by user: my552915@gmail.com
+INFO 2025-12-19 21:03:11,450 log "GET /api/companies/ HTTP/1.1" 200 216
+INFO 2025-12-19 21:03:11,452 views Companies listed by user: my552915@gmail.com
+INFO 2025-12-19 21:03:11,454 log "GET /api/companies/ HTTP/1.1" 200 216
+INFO 2025-12-19 21:03:11,971 views Dashboard accessed by my552915@gmail.com
+INFO 2025-12-19 21:03:11,972 log "GET /api/dashboard/ HTTP/1.1" 200 207
+INFO 2025-12-19 21:03:11,977 views Dashboard accessed by my552915@gmail.com
+INFO 2025-12-19 21:03:11,978 log "GET /api/dashboard/ HTTP/1.1" 200 207
+INFO 2025-12-19 21:03:13,152 views Companies listed by user: my552915@gmail.com
+INFO 2025-12-19 21:03:13,159 log "GET /api/employees/? HTTP/1.1" 200 1232
+INFO 2025-12-19 21:03:13,160 log "GET /api/companies/ HTTP/1.1" 200 216
+INFO 2025-12-19 21:03:13,162 log "GET /api/departments/? HTTP/1.1" 200 405
+INFO 2025-12-19 21:03:13,165 views Companies listed by user: my552915@gmail.com
+INFO 2025-12-19 21:03:13,170 log "GET /api/employees/? HTTP/1.1" 200 1232
+INFO 2025-12-19 21:03:13,172 log "GET /api/companies/ HTTP/1.1" 200 216
+INFO 2025-12-19 21:03:13,172 log "GET /api/departments/? HTTP/1.1" 200 405
+INFO 2025-12-19 21:03:13,753 views Employee report generated by my552915@gmail.com
+INFO 2025-12-19 21:03:13,756 log "GET /api/employees/report/ HTTP/1.1" 200 476
+INFO 2025-12-19 21:03:13,759 views Employee report generated by my552915@gmail.com
+INFO 2025-12-19 21:03:13,761 log "GET /api/employees/report/ HTTP/1.1" 200 476
+INFO 2025-12-19 21:03:16,039 views Dashboard accessed by my552915@gmail.com
+INFO 2025-12-19 21:03:16,040 log "GET /api/dashboard/ HTTP/1.1" 200 207
+INFO 2025-12-19 21:03:16,045 views Dashboard accessed by my552915@gmail.com
+INFO 2025-12-19 21:03:16,045 log "GET /api/dashboard/ HTTP/1.1" 200 207

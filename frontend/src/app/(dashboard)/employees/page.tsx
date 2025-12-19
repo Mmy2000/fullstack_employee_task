@@ -50,7 +50,6 @@ export default function EmployeesPage() {
   const { user } = useAuthStore();
   const canEdit = user?.role === "admin" || user?.role === "manager";
 
-  // -------------------- State --------------------
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
 
@@ -71,11 +70,9 @@ export default function EmployeesPage() {
     null
   );
 
-  // -------------------- Pagination --------------------
   const [page, setPage] = useState(1);
   const pageSize = 10;
 
-  // -------------------- Load Companies & Departments --------------------
   useEffect(() => {
     const loadStaticData = async () => {
       try {
@@ -92,7 +89,6 @@ export default function EmployeesPage() {
     loadStaticData();
   }, []);
 
-  // -------------------- Load Employees (API Filters) --------------------
   const fetchEmployees = async () => {
     setLoading(true);
     try {
@@ -110,7 +106,6 @@ export default function EmployeesPage() {
     fetchEmployees();
   }, [filters]);
 
-  // -------------------- Frontend Search --------------------
   useEffect(() => {
     if (!search) {
       setFilteredEmployees(employees);
@@ -127,19 +122,16 @@ export default function EmployeesPage() {
     setFilteredEmployees(filtered);
   }, [search, employees]);
 
-  // -------------------- Reset Page on Search / Filters --------------------
   useEffect(() => {
     setPage(1);
   }, [search, filters]);
 
-  // -------------------- Pagination Logic (Reusable Hook) --------------------
   const { paginatedData, totalItems } = usePagination(
     filteredEmployees,
     page,
     pageSize
   );
 
-  // -------------------- Actions --------------------
   const clearFilters = () => {
     setFilters({});
     setSearch("");
@@ -183,7 +175,6 @@ export default function EmployeesPage() {
     );
   };
 
-  // -------------------- Loading --------------------
   if (loading) {
     return (
       <div>
@@ -193,7 +184,6 @@ export default function EmployeesPage() {
     );
   }
 
-  // -------------------- UI --------------------
   return (
     <div className="space-y-6">
       {/* Header */}

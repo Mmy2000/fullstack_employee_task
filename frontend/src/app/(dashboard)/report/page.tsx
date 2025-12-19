@@ -40,11 +40,9 @@ export default function ReportPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // -------------------- Pagination --------------------
   const [page, setPage] = useState(1);
   const pageSize = 10;
 
-  // -------------------- Load Report --------------------
   useEffect(() => {
     fetchReport();
   }, []);
@@ -63,7 +61,6 @@ export default function ReportPage() {
     }
   };
 
-  // -------------------- Search --------------------
   useEffect(() => {
     if (!searchTerm) {
       setFilteredEmployees(employees);
@@ -84,19 +81,16 @@ export default function ReportPage() {
     setFilteredEmployees(filtered);
   }, [employees, searchTerm]);
 
-  // -------------------- Reset Page on Search --------------------
   useEffect(() => {
     setPage(1);
   }, [searchTerm]);
 
-  // -------------------- Pagination Logic --------------------
   const { paginatedData, totalItems } = usePagination(
     filteredEmployees,
     page,
     pageSize
   );
 
-  // -------------------- Export CSV (FULL filtered data) --------------------
   const exportToCSV = () => {
     const headers = [
       "Employee Name",
@@ -140,7 +134,6 @@ export default function ReportPage() {
     toast.success("Report exported successfully");
   };
 
-  // -------------------- Loading --------------------
   if (loading) {
     return (
       <div>
@@ -158,7 +151,6 @@ export default function ReportPage() {
     );
   }
 
-  // -------------------- UI --------------------
   return (
     <div>
       <div className="mb-8">
