@@ -268,7 +268,7 @@ coverage report
 
 | Item                     | Details                                           |
 |---------------------------|--------------------------------------------------|
-| **Documentation Link**    | [API Docs](http://127.0.0.1:8000/api/docs/)    |
+| **Documentation Link**    | [API Docs](https://aicontrol.pythonanywhere.com/api/docs/)    |
 | **Live Demo (Front-end)** | [Front Demo](https://fullstack-employee-task.vercel.app/) |
 | **Live Demo (Back-end)**  | [Back Demo](https://aicontrol.pythonanywhere.com/) |
 | **Email**                 | my552915@gmail.com                               |
