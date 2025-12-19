@@ -147,7 +147,7 @@ export function DepartmentModal({
                   Company <span className="text-destructive">*</span>
                 </Label>
                 <Select
-                  value={formData.company?.toString() || ""}
+                  value={formData.company ? formData.company?.toString() : undefined}
                   onValueChange={(value) =>
                     handleChange("company", parseInt(value))
                   }

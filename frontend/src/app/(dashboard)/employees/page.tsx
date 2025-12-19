@@ -348,7 +348,7 @@ export default function EmployeesPage() {
                       </Badge>
                     </TableCell>
                     <TableCell>{formatDate(employee.hired_on)}</TableCell>
-                    <TableCell>{employee.days_employed || "N/A"}</TableCell>
+                    <TableCell>{employee.days_employed != null && employee.days_employed > 0 ? employee.days_employed : formatDate(employee.hired_on)}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
                         <Button

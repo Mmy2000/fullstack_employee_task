@@ -53,9 +53,20 @@ export interface Company {
   updated_at: string;
 }
 
+export interface CompanyDetails {
+  id: number;
+  company_name: string;
+  number_of_departments: number;
+  number_of_employees: number;
+  departments: DepartmentDetails;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface CompanyFormData {
   company_name: string;
 }
+
 
 // Department Types
 export interface Department {
@@ -64,6 +75,17 @@ export interface Department {
   company_name: string;
   department_name: string;
   number_of_employees: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DepartmentDetails {
+  id: number;
+  company: number;
+  company_name: string;
+  department_name: string;
+  number_of_employees: number;
+  employees: Employee;
   created_at: string;
   updated_at: string;
 }

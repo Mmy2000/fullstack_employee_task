@@ -4,7 +4,6 @@ from django.core.exceptions import ValidationError
 from datetime import date
 
 
-
 class Company(models.Model):
     """Company model with auto-calculated fields"""
 
@@ -41,6 +40,14 @@ class Department(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def delete(self, *args, **kwargs):
+        """Prevent deletion if department has employees"""
+        if self.number_of_employees > 0:
+            raise ValidationError(
+                f"Cannot delete department '{self.department_name}' because it has {self.number_of_employees} employee(s)."
+            )
+        super().delete(*args, **kwargs)
+
     class Meta:
         db_table = "departments"
         unique_together = ["company", "department_name"]
@@ -75,7 +82,7 @@ class Employee(models.Model):
     )
     department = models.ForeignKey(
         Department,
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
         null=True,
         blank=True,
         related_name="employees",
@@ -99,43 +106,6 @@ class Employee(models.Model):
     def __str__(self):
         return f"{self.employee_name} - {self.company.company_name}"
 
-    def clean(self):
-        """Validate department belongs to selected company"""
-        super().clean()
-
-        if self.department and self.department.company != self.company:
-            raise ValidationError(
-                {"department": "Department must belong to the selected company."}
-            )
-
-        # Validate hired_on is set only for hired status
-        if self.employee_status == "hired" and not self.hired_on:
-            raise ValidationError(
-                {"hired_on": "Hired date is required for hired employees."}
-            )
-
-        # Validate workflow transitions
-        if self.pk:  # Only validate on update
-            old_instance = Employee.objects.get(pk=self.pk)
-            if not self._is_valid_transition(
-                old_instance.employee_status, self.employee_status
-            ):
-                raise ValidationError(
-                    {
-                        "employee_status": f"Invalid transition from {old_instance.employee_status} to {self.employee_status}"
-                    }
-                )
-
-    def _is_valid_transition(self, old_status, new_status):
-        """Validate workflow transitions"""
-        valid_transitions = {
-            "application_received": ["interview_scheduled", "not_accepted"],
-            "interview_scheduled": ["hired", "not_accepted"],
-            "hired": ["hired"],  # Can stay hired
-            "not_accepted": ["not_accepted"],  # Terminal state
-        }
-
-        return new_status in valid_transitions.get(old_status, [])
 
     @property
     def days_employed(self):

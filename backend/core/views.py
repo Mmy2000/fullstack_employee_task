@@ -10,6 +10,8 @@ from .serializers import (
     DepartmentSerializer,
     EmployeeSerializer,
     EmployeeReportSerializer,
+    DepartmentDetailsSerializer,
+    CompanyDetailsSerializer,
 )
 from config.permissions import CompanyPermission, DepartmentPermission, EmployeePermission
 from config.response import CustomResponse
@@ -48,7 +50,7 @@ class CompanyViewSet(viewsets.ModelViewSet):
         """Retrieve a single company"""
         try:
             company = self.get_object()
-            serializer = self.get_serializer(company)
+            serializer = CompanyDetailsSerializer(company)
             return CustomResponse(serializer.data, status=status.HTTP_200_OK)
         except Company.DoesNotExist:
             return CustomResponse(
@@ -176,7 +178,7 @@ class DepartmentViewSet(viewsets.ModelViewSet):
         """Retrieve a single department"""
         try:
             department = self.get_object()
-            serializer = self.get_serializer(department)
+            serializer = DepartmentDetailsSerializer(department)
             return CustomResponse(serializer.data, status=status.HTTP_200_OK)
         except Department.DoesNotExist:
             return CustomResponse(
@@ -242,13 +244,18 @@ class DepartmentViewSet(viewsets.ModelViewSet):
         try:
             department = self.get_object()
             department_name = department.department_name
+
             department.delete()
-            logger.info(
-                f"Department deleted by {request.user.email}: {department_name}"
-            )
+
+            logger.info(f"Department deleted by {request.user.email}: {department_name}")
             return CustomResponse(
-                message= "Department deleted successfully",
+                message="Department deleted successfully",
                 status=status.HTTP_204_NO_CONTENT,
+            )
+        except ProtectedError:
+            return CustomResponse(
+                message=f"Cannot delete department because it has employees. Please reassign or remove employees first.",
+                status=status.HTTP_400_BAD_REQUEST,
             )
         except Department.DoesNotExist:
             return CustomResponse(
@@ -257,8 +264,7 @@ class DepartmentViewSet(viewsets.ModelViewSet):
         except Exception as e:
             logger.error(f"Error deleting department: {str(e)}")
             return CustomResponse(
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                message=str(e)
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR, message=str(e)
             )
 
 

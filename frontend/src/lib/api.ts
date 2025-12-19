@@ -7,6 +7,7 @@ import {
   DashboardSummary, APIError,
   UpdateRequest,
   ChangePasswordData,
+  CompanyDetails,
 } from '@/types';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
@@ -128,8 +129,8 @@ export const companyAPI = {
     return response.data;
   },
 
-  getById: async (id: number): Promise<Company> => {
-    const response = await apiClient.get<Company>(`/api/companies/${id}/`);
+  getById: async (id: number): Promise<CompanyDetails> => {
+    const response = await apiClient.get<CompanyDetails>(`/api/companies/${id}/`);    
     return response.data;
   },
 
@@ -198,6 +199,7 @@ export const employeeAPI = {
 
   getById: async (id: number): Promise<Employee> => {
     const response = await apiClient.get<Employee>(`/api/employees/${id}/`);
+    
     return response.data;
   },
 

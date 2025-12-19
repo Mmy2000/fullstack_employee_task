@@ -2,19 +2,25 @@ from rest_framework import serializers
 from .models import Company, Department, Employee
 
 
-class CompanySerializer(serializers.ModelSerializer):
-    """Serializer for Company model with auto-calculated fields"""
+class SampleDataEmployeeSerializer(serializers.ModelSerializer):
+    """Serializer for Employee model with all validations"""
 
-    number_of_departments = serializers.IntegerField(read_only=True)
-    number_of_employees = serializers.IntegerField(read_only=True)
+    days_employed = serializers.IntegerField(read_only=True)
+    company_name = serializers.CharField(source="company.company_name", read_only=True)
 
     class Meta:
-        model = Company
+        model = Employee
         fields = [
             "id",
             "company_name",
-            "number_of_departments",
-            "number_of_employees",
+            "employee_status",
+            "employee_name",
+            "email_address",
+            "mobile_number",
+            "address",
+            "designation",
+            "hired_on",
+            "days_employed",
             "created_at",
             "updated_at",
         ]
@@ -34,6 +40,67 @@ class DepartmentSerializer(serializers.ModelSerializer):
             "company",
             "company_name",
             "department_name",
+            "number_of_employees",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = ["id", "created_at", "updated_at"]
+
+
+class DepartmentDetailsSerializer(serializers.ModelSerializer):
+    """Serializer for Department model"""
+
+    number_of_employees = serializers.IntegerField(read_only=True)
+    company_name = serializers.CharField(source="company.company_name", read_only=True)
+    employees = SampleDataEmployeeSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Department
+        fields = [
+            "id",
+            "company",
+            "company_name",
+            "department_name",
+            "number_of_employees",
+            "employees",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = ["id", "created_at", "updated_at"]
+
+
+class CompanySerializer(serializers.ModelSerializer):
+    """Serializer for Company model with auto-calculated fields"""
+
+    number_of_departments = serializers.IntegerField(read_only=True)
+    number_of_employees = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = Company
+        fields = [
+            "id",
+            "company_name",
+            "number_of_departments",
+            "number_of_employees",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = ["id", "created_at", "updated_at"]
+
+class CompanyDetailsSerializer(serializers.ModelSerializer):
+    """Serializer for Company model with auto-calculated fields"""
+
+    number_of_departments = serializers.IntegerField(read_only=True)
+    number_of_employees = serializers.IntegerField(read_only=True)
+    departments = DepartmentDetailsSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Company
+        fields = [
+            "id",
+            "company_name",
+            "number_of_departments",
+            "departments",
             "number_of_employees",
             "created_at",
             "updated_at",
@@ -96,24 +163,26 @@ class EmployeeSerializer(serializers.ModelSerializer):
                 {"hired_on": "Hired date is required for hired employees."}
             )
 
-        # Validate workflow transitions on update
         if self.instance:
             old_status = self.instance.employee_status
             new_status = data.get("employee_status", old_status)
 
-            valid_transitions = {
-                "application_received": ["interview_scheduled", "not_accepted"],
-                "interview_scheduled": ["hired", "not_accepted"],
-                "hired": ["hired"],
-                "not_accepted": ["not_accepted"],
-            }
+            # Only check transitions if status is actually changing
+            if new_status != old_status:
+                valid_transitions = {
+                    "application_received": ["interview_scheduled", "not_accepted"],
+                    "interview_scheduled": ["hired", "not_accepted"],
+                    "hired": [],
+                    "not_accepted": [],
+                }
 
-            if new_status not in valid_transitions.get(old_status, []):
-                raise serializers.ValidationError(
-                    {
-                        "employee_status": f"Invalid transition from {old_status} to {new_status}"
-                    }
-                )
+                if new_status not in valid_transitions.get(old_status, []):
+                    raise serializers.ValidationError(
+                        {
+                            "employee_status": f"Invalid transition from {old_status} to {new_status}"
+                        }
+                    )
+
 
         return data
 
