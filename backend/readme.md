@@ -264,6 +264,8 @@ coverage report
 
 ## 📚 API Documentation
 
+documentaion link : http://127.0.0.1:8000/api/docs/
+
 ### Authentication
 
 All endpoints except registration and login require JWT authentication. Include the token in the Authorization header:
