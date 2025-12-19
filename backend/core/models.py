@@ -106,7 +106,6 @@ class Employee(models.Model):
     def __str__(self):
         return f"{self.employee_name} - {self.company.company_name}"
 
-
     @property
     def days_employed(self):
         """Auto-calculate days employed"""
@@ -114,6 +113,44 @@ class Employee(models.Model):
             delta = date.today() - self.hired_on
             return delta.days
         return None
+
+    def clean(self):
+        """Validate department belongs to selected company"""
+        super().clean()
+
+        if self.department and self.department.company != self.company:
+            raise ValidationError(
+                {"department": "Department must belong to the selected company."}
+            )
+
+        # Validate hired_on is set only for hired status
+        if self.employee_status == "hired" and not self.hired_on:
+            raise ValidationError(
+                {"hired_on": "Hired date is required for hired employees."}
+            )
+
+        # Validate workflow transitions
+        if self.pk:  # Only validate on update
+            old_instance = Employee.objects.get(pk=self.pk)
+            if not self._is_valid_transition(
+                old_instance.employee_status, self.employee_status
+            ):
+                raise ValidationError(
+                    {
+                        "employee_status": f"Invalid transition from {old_instance.employee_status} to {self.employee_status}"
+                    }
+                )
+
+    def _is_valid_transition(self, old_status, new_status):
+        """Validate workflow transitions"""
+        valid_transitions = {
+            "application_received": ["interview_scheduled", "not_accepted"],
+            "interview_scheduled": ["hired", "not_accepted"],
+            "hired": ["hired"],  # Can stay hired
+            "not_accepted": ["not_accepted"],  # Terminal state
+        }
+
+        return new_status in valid_transitions.get(old_status, [])
 
     def save(self, *args, **kwargs):
         """Override save to call full_clean"""

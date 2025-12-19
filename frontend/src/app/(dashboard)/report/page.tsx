@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { employeeAPI, handleAPIError } from "@/lib/api";
 import { EmployeeReportData } from "@/types";
+
 import {
   Card,
   CardContent,
@@ -10,6 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+
 import {
   Table,
   TableBody,
@@ -18,12 +20,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+
 import { formatDate } from "@/lib/utils";
 import { FileText, Search, Download } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+
+import { Pagination } from "@/components/Pagination";
+import { usePagination } from "@/app/hooks/usePagination";
 
 export default function ReportPage() {
   const [employees, setEmployees] = useState<EmployeeReportData[]>([]);
@@ -33,18 +40,20 @@ export default function ReportPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
 
+  // -------------------- Pagination --------------------
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
+
+  // -------------------- Load Report --------------------
   useEffect(() => {
     fetchReport();
   }, []);
-
-  useEffect(() => {
-    filterEmployees();
-  }, [employees, searchTerm]);
 
   const fetchReport = async () => {
     try {
       const data = await employeeAPI.getReport();
       setEmployees(data);
+      setFilteredEmployees(data);
     } catch (error) {
       toast.error("Error", {
         description: handleAPIError(error),
@@ -54,7 +63,8 @@ export default function ReportPage() {
     }
   };
 
-  const filterEmployees = () => {
+  // -------------------- Search --------------------
+  useEffect(() => {
     if (!searchTerm) {
       setFilteredEmployees(employees);
       return;
@@ -72,9 +82,21 @@ export default function ReportPage() {
     );
 
     setFilteredEmployees(filtered);
-  };
+  }, [employees, searchTerm]);
 
+  // -------------------- Reset Page on Search --------------------
+  useEffect(() => {
+    setPage(1);
+  }, [searchTerm]);
 
+  // -------------------- Pagination Logic --------------------
+  const { paginatedData, totalItems } = usePagination(
+    filteredEmployees,
+    page,
+    pageSize
+  );
+
+  // -------------------- Export CSV (FULL filtered data) --------------------
   const exportToCSV = () => {
     const headers = [
       "Employee Name",
@@ -115,9 +137,10 @@ export default function ReportPage() {
     document.body.removeChild(a);
     window.URL.revokeObjectURL(url);
 
-    toast.success( "Report exported successfully");
+    toast.success("Report exported successfully");
   };
 
+  // -------------------- Loading --------------------
   if (loading) {
     return (
       <div>
@@ -135,6 +158,7 @@ export default function ReportPage() {
     );
   }
 
+  // -------------------- UI --------------------
   return (
     <div>
       <div className="mb-8">
@@ -155,8 +179,7 @@ export default function ReportPage() {
                 Employee Report
               </CardTitle>
               <CardDescription>
-                Showing {filteredEmployees.length} of {employees.length} hired
-                employees
+                Showing {totalItems} of {employees.length} hired employees
               </CardDescription>
             </div>
             <Button
@@ -168,6 +191,7 @@ export default function ReportPage() {
             </Button>
           </div>
         </CardHeader>
+
         <CardContent>
           {/* Search */}
           <div className="mb-6">
@@ -182,7 +206,7 @@ export default function ReportPage() {
             </div>
           </div>
 
-          {filteredEmployees.length === 0 ? (
+          {paginatedData.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center">
               <FileText className="h-16 w-16 text-muted-foreground mb-4" />
               <h3 className="text-lg font-semibold mb-2">No employees found</h3>
@@ -193,42 +217,55 @@ export default function ReportPage() {
               </p>
             </div>
           ) : (
-            <div className="rounded-md border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Employee Name</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Mobile</TableHead>
-                    <TableHead>Position</TableHead>
-                    <TableHead>Company</TableHead>
-                    <TableHead>Department</TableHead>
-                    <TableHead>Hired On</TableHead>
-                    <TableHead className="text-right">Days Employed</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredEmployees.map((employee, index) => (
-                    <TableRow key={index}>
-                      <TableCell className="font-medium">
-                        {employee.employee_name}
-                      </TableCell>
-                      <TableCell>{employee.email_address}</TableCell>
-                      <TableCell>{employee.mobile_number}</TableCell>
-                      <TableCell>{employee.position}</TableCell>
-                      <TableCell>{employee.company_name}</TableCell>
-                      <TableCell>{employee.department_name}</TableCell>
-                      <TableCell>{formatDate(employee.hired_on)}</TableCell>
-                      <TableCell className="text-right">
-                        {employee.days_employed && employee.days_employed > 0
-                          ? employee.days_employed
-                          : formatDate(employee.hired_on)}
-                      </TableCell>
+            <>
+              <div className="rounded-md border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Employee Name</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Mobile</TableHead>
+                      <TableHead>Position</TableHead>
+                      <TableHead>Company</TableHead>
+                      <TableHead>Department</TableHead>
+                      <TableHead>Hired On</TableHead>
+                      <TableHead className="text-right">
+                        Days Employed
+                      </TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+                  </TableHeader>
+                  <TableBody>
+                    {paginatedData.map((employee, index) => (
+                      <TableRow key={index}>
+                        <TableCell className="font-medium">
+                          {employee.employee_name}
+                        </TableCell>
+                        <TableCell>{employee.email_address}</TableCell>
+                        <TableCell>{employee.mobile_number}</TableCell>
+                        <TableCell>{employee.position}</TableCell>
+                        <TableCell>{employee.company_name}</TableCell>
+                        <TableCell>{employee.department_name}</TableCell>
+                        <TableCell>{formatDate(employee.hired_on)}</TableCell>
+                        <TableCell className="text-right">
+                          {employee.days_employed && employee.days_employed > 0
+                            ? employee.days_employed
+                            : formatDate(employee.hired_on)}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Pagination */}
+              <Pagination
+                page={page}
+                pageSize={pageSize}
+                totalItems={totalItems}
+                onPageChange={setPage}
+                className="mt-4"
+              />
+            </>
           )}
         </CardContent>
       </Card>

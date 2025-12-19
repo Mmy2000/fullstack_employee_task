@@ -2,27 +2,52 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+
 import { companyAPI } from "@/lib/api";
 import { CompanyDetails } from "@/types";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
 import { Card, CardContent } from "@/components/ui/card";
 import { EmployeesTable } from "@/components/EmployeesTable";
-import { Building2, Users, Layers, Timer, ArrowLeft } from "lucide-react";
-import { formatDate } from "@/lib/utils";
+import { Pagination } from "@/components/Pagination";
 import { Stat } from "@/components/Stats";
 import { Button } from "@/components/ui/button";
+
+import { Building2, Users, Layers, Timer, ArrowLeft } from "lucide-react";
+
+import { formatDate } from "@/lib/utils";
+import { usePagination } from "@/app/hooks/usePagination";
+
+const PAGE_SIZE = 10;
 
 const Page = () => {
   const router = useRouter();
   const { id } = useParams<{ id: string }>();
+
   const [data, setData] = useState<CompanyDetails | null>(null);
+  const [activeDeptId, setActiveDeptId] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     if (!id) return;
-    companyAPI.getById(Number(id)).then(setData);
+
+    companyAPI.getById(Number(id)).then((res) => {
+      setData(res);
+      setActiveDeptId(res.departments[0]?.id.toString() ?? null);
+      setPage(1);
+    });
   }, [id]);
+
+  const activeDepartment =
+    data?.departments.find((d) => d.id.toString() === activeDeptId) ?? null;
+
+  const employees = activeDepartment?.employees ?? [];
+
+  const { paginatedData, totalItems } = usePagination(
+    employees,
+    page,
+    PAGE_SIZE
+  );
 
   if (!data) {
     return (
@@ -34,7 +59,7 @@ const Page = () => {
 
   return (
     <div className="max-w-7xl mx-auto p-6 space-y-8">
-      {/* ================= Company Header ================= */}
+      {/* ================= Header ================= */}
       <div className="flex items-center justify-between">
         <Button
           variant="ghost"
@@ -45,6 +70,7 @@ const Page = () => {
           Back
         </Button>
       </div>
+
       <Card>
         <CardContent className="p-6 space-y-6">
           {/* Title */}
@@ -93,11 +119,15 @@ const Page = () => {
         </div>
 
         <Tabs
-          defaultValue={data.departments[0]?.id.toString()}
+          value={activeDeptId ?? ""}
+          onValueChange={(value) => {
+            setActiveDeptId(value);
+            setPage(1); // reset pagination on tab change
+          }}
           className="w-full"
         >
           {/* Tabs Header */}
-          <TabsList className="flex  justify-start gap-2 bg-muted/50 p-4 rounded-xl">
+          <TabsList className="flex justify-start gap-2 bg-muted/50 p-4 rounded-xl">
             {data.departments.map((dept) => (
               <TabsTrigger
                 key={dept.id}
@@ -106,7 +136,7 @@ const Page = () => {
               >
                 {dept.department_name}
                 <span className="ml-2 text-xs text-muted-foreground">
-                  ({dept.number_of_employees}) Employee
+                  ({dept.number_of_employees})
                 </span>
               </TabsTrigger>
             ))}
@@ -122,10 +152,20 @@ const Page = () => {
               <Card className="p-0">
                 <CardContent className="p-0">
                   {dept.employees.length > 0 ? (
-                    <EmployeesTable
-                      employees={dept.employees}
-                      onView={(emp) => router.push(`/employees/${emp.id}`)}
-                    />
+                    <>
+                      <EmployeesTable
+                        employees={paginatedData}
+                        onView={(emp) => router.push(`/employees/${emp.id}`)}
+                      />
+
+                      <Pagination
+                        page={page}
+                        pageSize={PAGE_SIZE}
+                        totalItems={totalItems}
+                        onPageChange={setPage}
+                        className="p-4"
+                      />
+                    </>
                   ) : (
                     <div className="py-20 text-center text-muted-foreground">
                       No employees in this department

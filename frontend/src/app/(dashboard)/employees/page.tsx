@@ -39,9 +39,11 @@ import {
 
 import { EmployeesTable } from "@/components/EmployeesTable";
 import { EmployeeModal } from "@/components/modals/EmployeeModal";
+import { Pagination } from "@/components/Pagination";
 
 import { Plus, Search, Users } from "lucide-react";
 import { toast } from "sonner";
+import { usePagination } from "@/app/hooks/usePagination";
 
 export default function EmployeesPage() {
   const router = useRouter();
@@ -51,6 +53,7 @@ export default function EmployeesPage() {
   // -------------------- State --------------------
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
+
   const [companies, setCompanies] = useState<any[]>([]);
   const [departments, setDepartments] = useState<any[]>([]);
 
@@ -67,6 +70,10 @@ export default function EmployeesPage() {
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(
     null
   );
+
+  // -------------------- Pagination --------------------
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
 
   // -------------------- Load Companies & Departments --------------------
   useEffect(() => {
@@ -85,13 +92,13 @@ export default function EmployeesPage() {
     loadStaticData();
   }, []);
 
-  // -------------------- Load Employees (API-Filtered) --------------------
+  // -------------------- Load Employees (API Filters) --------------------
   const fetchEmployees = async () => {
     setLoading(true);
     try {
       const data = await employeeAPI.getAll(filters);
       setEmployees(data);
-      setFilteredEmployees(data); // initialize filtered
+      setFilteredEmployees(data);
     } catch (error) {
       toast.error(handleAPIError(error));
     } finally {
@@ -120,6 +127,18 @@ export default function EmployeesPage() {
     setFilteredEmployees(filtered);
   }, [search, employees]);
 
+  // -------------------- Reset Page on Search / Filters --------------------
+  useEffect(() => {
+    setPage(1);
+  }, [search, filters]);
+
+  // -------------------- Pagination Logic (Reusable Hook) --------------------
+  const { paginatedData, totalItems } = usePagination(
+    filteredEmployees,
+    page,
+    pageSize
+  );
+
   // -------------------- Actions --------------------
   const clearFilters = () => {
     setFilters({});
@@ -134,6 +153,7 @@ export default function EmployeesPage() {
       await employeeAPI.delete(deleteId);
       toast.success("Employee deleted successfully");
       fetchEmployees();
+      setPage(1);
     } catch (error) {
       toast.error(handleAPIError(error));
     } finally {
@@ -196,7 +216,6 @@ export default function EmployeesPage() {
       <Card>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-            {/* Frontend Search */}
             <div className="relative">
               <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input
@@ -291,7 +310,7 @@ export default function EmployeesPage() {
       </Card>
 
       {/* Table */}
-      {filteredEmployees.length === 0 ? (
+      {paginatedData.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center py-16">
             <Users className="h-14 w-14 text-muted-foreground mb-4" />
@@ -305,7 +324,7 @@ export default function EmployeesPage() {
         <Card className="p-0">
           <CardContent className="p-0">
             <EmployeesTable
-              employees={filteredEmployees}
+              employees={paginatedData}
               canEdit={canEdit}
               onView={(emp) => router.push(`/employees/${emp.id}`)}
               onEdit={openEditModal}
@@ -314,6 +333,15 @@ export default function EmployeesPage() {
           </CardContent>
         </Card>
       )}
+
+      {/* Pagination */}
+      <Pagination
+        page={page}
+        pageSize={pageSize}
+        totalItems={totalItems}
+        onPageChange={setPage}
+        className="mt-2"
+      />
 
       {/* Modals */}
       <EmployeeModal
