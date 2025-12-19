@@ -129,16 +129,25 @@ pip install -r requirements.txt
 Create a `.env` file in the project root:
 
 ```env
-SECRET_KEY=your-secret-key-here
+BASE_URL="http://localhost:8000"
 DEBUG=True
-DATABASE_URL=sqlite:///db.sqlite3
+SECRET_KEY=""
+ALLOWED_HOSTS=*
 
-# For PostgreSQL (optional)
-# DB_NAME=employee_management
-# DB_USER=postgres
-# DB_PASSWORD=your-password
-# DB_HOST=localhost
-# DB_PORT=5432
+DB_HOST=localhost
+DB_NAME=name
+DB_USER=postgres
+DB_PASSWORD=secret
+
+EMAIL_BACKEND=""
+EMAIL_HOST=""
+EMAIL_PORT=""
+EMAIL_USE_TLS=""
+EMAIL_HOST_USER=""
+EMAIL_HOST_PASSWORD=""
+DEFAULT_FROM_EMAIL=""
+
+ALLOW_ALL_ORIGINS=True
 ```
 
 ### 5. Apply Migrations
