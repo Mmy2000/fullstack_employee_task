@@ -265,6 +265,10 @@ coverage report
 ## 📚 API Documentation
 
 documentaion link : http://127.0.0.1:8000/api/docs/
+Live Demo front : https://fullstack-employee-task.vercel.app/
+Live Demo back : https://aicontrol.pythonanywhere.com/
+email: my552915@gmail.com
+password: Mahmoud@123
 
 ### Authentication
 
