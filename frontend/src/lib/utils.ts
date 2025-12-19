@@ -88,3 +88,4 @@ export function isValidPhone(phone: string): boolean {
   const phoneRegex = /^\+?1?\d{9,15}$/;
   return phoneRegex.test(phone.replace(/\D/g, ''));
 }
+

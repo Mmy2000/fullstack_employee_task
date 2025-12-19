@@ -5,8 +5,6 @@ import { useRouter } from "next/navigation";
 import {
   Employee,
   EmployeeFilters,
-  STATUS_COLORS,
-  STATUS_LABELS,
 } from "@/types";
 import {
   employeeAPI,
@@ -17,7 +15,6 @@ import {
 import { useAuthStore } from "@/store/authStore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Select,
@@ -26,17 +23,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+
 import { Plus, Eye, Pencil, Trash2, Search, Users } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { formatDate } from "@/lib/utils";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -49,6 +38,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { EmployeeModal } from "@/components/modals/EmployeeModal";
+import { EmployeesTable } from "@/components/EmployeesTable";
 
 export default function EmployeesPage() {
   const router = useRouter();
@@ -314,77 +304,16 @@ export default function EmployeesPage() {
           </CardContent>
         </Card>
       ) : (
-        <Card>
-          <CardContent className="p-0">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Company</TableHead>
-                  <TableHead>Department</TableHead>
-                  <TableHead>Designation</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Hired On</TableHead>
-                  <TableHead>Days Employed</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredEmployees.map((employee) => (
-                  <TableRow key={employee.id}>
-                    <TableCell className="font-medium">
-                      {employee.employee_name}
-                    </TableCell>
-                    <TableCell>{employee.email_address}</TableCell>
-                    <TableCell>{employee.company_name}</TableCell>
-                    <TableCell>{employee.department_name || "N/A"}</TableCell>
-                    <TableCell>{employee.designation}</TableCell>
-                    <TableCell>
-                      <Badge
-                        className={STATUS_COLORS[employee.employee_status]}
-                      >
-                        {STATUS_LABELS[employee.employee_status]}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>{formatDate(employee.hired_on)}</TableCell>
-                    <TableCell>{employee.days_employed != null && employee.days_employed > 0 ? employee.days_employed : formatDate(employee.hired_on)}</TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() =>
-                            router.push(`/employees/${employee.id}`)
-                          }
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        {canEdit && (
-                          <>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleOpenEditModal(employee)}
-                            >
-                              <Pencil className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => setDeleteId(employee.id)}
-                            >
-                              <Trash2 className="h-4 w-4 text-destructive" />
-                            </Button>
-                          </>
-                        )}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
+        <Card className=" p-0">
+            <CardContent className="p-0">
+              <EmployeesTable
+                employees={filteredEmployees}
+                canEdit={canEdit}
+                onView={(emp) => router.push(`/employees/${emp.id}`)}
+                onEdit={handleOpenEditModal}
+                onDelete={(emp) => setDeleteId(emp.id)}
+              />
+            </CardContent>
         </Card>
       )}
 

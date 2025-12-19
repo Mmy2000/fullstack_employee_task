@@ -58,7 +58,7 @@ export interface CompanyDetails {
   company_name: string;
   number_of_departments: number;
   number_of_employees: number;
-  departments: DepartmentDetails;
+  departments: DepartmentDetails[];
   created_at: string;
   updated_at: string;
 }
@@ -85,7 +85,7 @@ export interface DepartmentDetails {
   company_name: string;
   department_name: string;
   number_of_employees: number;
-  employees: Employee;
+  employees: Employee[];
   created_at: string;
   updated_at: string;
 }
