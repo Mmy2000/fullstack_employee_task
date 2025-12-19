@@ -119,10 +119,8 @@ class EmployeeSerializer(serializers.ModelSerializer):
 
 
 class EmployeeReportSerializer(serializers.ModelSerializer):
-    """Serializer for Employee Report - hired employees only"""
-
     company_name = serializers.CharField(source="company.company_name")
-    department_name = serializers.CharField(source="department.department_name")
+    department_name = serializers.SerializerMethodField()
     days_employed = serializers.IntegerField()
     position = serializers.CharField(source="designation")
 
@@ -138,3 +136,6 @@ class EmployeeReportSerializer(serializers.ModelSerializer):
             "company_name",
             "department_name",
         ]
+
+    def get_department_name(self, obj):
+        return obj.department.department_name if obj.department else None
