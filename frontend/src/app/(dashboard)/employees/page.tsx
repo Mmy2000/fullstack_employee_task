@@ -2,20 +2,22 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  Employee,
-  EmployeeFilters,
-} from "@/types";
+
+import { Employee, EmployeeFilters } from "@/types";
 import {
   employeeAPI,
   handleAPIError,
   companyAPI,
   departmentAPI,
 } from "@/lib/api";
+
 import { useAuthStore } from "@/store/authStore";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+
 import {
   Select,
   SelectContent,
@@ -24,8 +26,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { Plus, Eye, Pencil, Trash2, Search, Users } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -36,25 +36,31 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { toast } from "sonner";
-import { EmployeeModal } from "@/components/modals/EmployeeModal";
+
 import { EmployeesTable } from "@/components/EmployeesTable";
+import { EmployeeModal } from "@/components/modals/EmployeeModal";
+
+import { Plus, Search, Users } from "lucide-react";
+import { toast } from "sonner";
 
 export default function EmployeesPage() {
   const router = useRouter();
   const { user } = useAuthStore();
+  const canEdit = user?.role === "admin" || user?.role === "manager";
 
+  // -------------------- State --------------------
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
   const [companies, setCompanies] = useState<any[]>([]);
   const [departments, setDepartments] = useState<any[]>([]);
+
+  const [filters, setFilters] = useState<EmployeeFilters>({});
+  const [search, setSearch] = useState("");
+
   const [loading, setLoading] = useState(true);
 
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [deleting, setDeleting] = useState(false);
-
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filters, setFilters] = useState<EmployeeFilters>({});
 
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
@@ -62,25 +68,30 @@ export default function EmployeesPage() {
     null
   );
 
-  const canEdit = user?.role === "admin" || user?.role === "manager";
-
+  // -------------------- Load Companies & Departments --------------------
   useEffect(() => {
-    fetchData();
+    const loadStaticData = async () => {
+      try {
+        const [companiesData, departmentsData] = await Promise.all([
+          companyAPI.getAll(),
+          departmentAPI.getAll(),
+        ]);
+        setCompanies(companiesData);
+        setDepartments(departmentsData);
+      } catch (error) {
+        toast.error(handleAPIError(error));
+      }
+    };
+    loadStaticData();
   }, []);
 
-  useEffect(() => {
-    filterEmployees();
-  }, [employees, searchTerm, filters]);
-
-  const fetchData = async () => {
+  // -------------------- Load Employees (API-Filtered) --------------------
+  const fetchEmployees = async () => {
+    setLoading(true);
     try {
-      const [employeesData, companiesData, departmentsData] = await Promise.all(
-        [employeeAPI.getAll(), companyAPI.getAll(), departmentAPI.getAll()]
-      );
-
-      setEmployees(employeesData);
-      setCompanies(companiesData);
-      setDepartments(departmentsData);
+      const data = await employeeAPI.getAll(filters);
+      setEmployees(data);
+      setFilteredEmployees(data); // initialize filtered
     } catch (error) {
       toast.error(handleAPIError(error));
     } finally {
@@ -88,35 +99,31 @@ export default function EmployeesPage() {
     }
   };
 
-  const filterEmployees = () => {
-    let filtered = [...employees];
+  useEffect(() => {
+    fetchEmployees();
+  }, [filters]);
 
-    if (searchTerm) {
-      filtered = filtered.filter(
-        (emp) =>
-          emp.employee_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          emp.email_address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          emp.designation.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+  // -------------------- Frontend Search --------------------
+  useEffect(() => {
+    if (!search) {
+      setFilteredEmployees(employees);
+      return;
     }
 
-    if (filters.company) {
-      filtered = filtered.filter((emp) => emp.company === filters.company);
-    }
-
-    if (filters.department) {
-      filtered = filtered.filter(
-        (emp) => emp.department === filters.department
-      );
-    }
-
-    if (filters.status) {
-      filtered = filtered.filter(
-        (emp) => emp.employee_status === filters.status
-      );
-    }
+    const filtered = employees.filter(
+      (emp) =>
+        emp.employee_name.toLowerCase().includes(search.toLowerCase()) ||
+        emp.email_address.toLowerCase().includes(search.toLowerCase()) ||
+        emp.designation.toLowerCase().includes(search.toLowerCase())
+    );
 
     setFilteredEmployees(filtered);
+  }, [search, employees]);
+
+  // -------------------- Actions --------------------
+  const clearFilters = () => {
+    setFilters({});
+    setSearch("");
   };
 
   const handleDelete = async () => {
@@ -126,7 +133,7 @@ export default function EmployeesPage() {
     try {
       await employeeAPI.delete(deleteId);
       toast.success("Employee deleted successfully");
-      fetchData();
+      fetchEmployees();
     } catch (error) {
       toast.error(handleAPIError(error));
     } finally {
@@ -135,25 +142,20 @@ export default function EmployeesPage() {
     }
   };
 
-  const clearFilters = () => {
-    setFilters({});
-    setSearchTerm("");
-  };
-
-  const handleOpenCreateModal = () => {
+  const openCreateModal = () => {
     setSelectedEmployee(null);
     setModalMode("create");
     setModalOpen(true);
   };
 
-  const handleOpenEditModal = (employee: Employee) => {
+  const openEditModal = (employee: Employee) => {
     setSelectedEmployee(employee);
     setModalMode("edit");
     setModalOpen(true);
   };
 
-  const handleModalSuccess = () => {
-    fetchData();
+  const onModalSuccess = () => {
+    fetchEmployees();
     toast.success(
       modalMode === "create"
         ? "Employee created successfully"
@@ -161,6 +163,7 @@ export default function EmployeesPage() {
     );
   };
 
+  // -------------------- Loading --------------------
   if (loading) {
     return (
       <div>
@@ -170,18 +173,19 @@ export default function EmployeesPage() {
     );
   }
 
+  // -------------------- UI --------------------
   return (
-    <div>
+    <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Employees</h1>
           <p className="text-muted-foreground">
-            Manage employee records and track their status
+            Manage employee records and hiring status
           </p>
         </div>
         {canEdit && (
-          <Button onClick={handleOpenCreateModal}>
+          <Button onClick={openCreateModal}>
             <Plus className="mr-2 h-4 w-4" />
             Add Employee
           </Button>
@@ -189,15 +193,16 @@ export default function EmployeesPage() {
       </div>
 
       {/* Filters */}
-      <Card className="mb-6">
-        <CardContent className="">
+      <Card>
+        <CardContent>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+            {/* Frontend Search */}
             <div className="relative">
               <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search employees..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
                 className="pl-9"
               />
             </div>
@@ -208,7 +213,7 @@ export default function EmployeesPage() {
               onValueChange={(value) =>
                 setFilters({
                   ...filters,
-                  company: value === "all" ? undefined : parseInt(value),
+                  company: value === "all" ? undefined : Number(value),
                 })
               }
             >
@@ -217,9 +222,9 @@ export default function EmployeesPage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Companies</SelectItem>
-                {companies.map((company) => (
-                  <SelectItem key={company.id} value={company.id.toString()}>
-                    {company.company_name}
+                {companies.map((c) => (
+                  <SelectItem key={c.id} value={c.id.toString()}>
+                    {c.company_name}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -231,7 +236,7 @@ export default function EmployeesPage() {
               onValueChange={(value) =>
                 setFilters({
                   ...filters,
-                  department: value === "all" ? undefined : parseInt(value),
+                  department: value === "all" ? undefined : Number(value),
                 })
               }
             >
@@ -242,12 +247,11 @@ export default function EmployeesPage() {
                 <SelectItem value="all">All Departments</SelectItem>
                 {departments
                   .filter(
-                    (dept) =>
-                      !filters.company || dept.company === filters.company
+                    (d) => !filters.company || d.company === filters.company
                   )
-                  .map((dept) => (
-                    <SelectItem key={dept.id} value={dept.id.toString()}>
-                      {dept.department_name}
+                  .map((d) => (
+                    <SelectItem key={d.id} value={d.id.toString()}>
+                      {d.department_name}
                     </SelectItem>
                   ))}
               </SelectContent>
@@ -280,40 +284,34 @@ export default function EmployeesPage() {
             </Select>
 
             <Button variant="outline" onClick={clearFilters}>
-              Clear Filters
+              Clear
             </Button>
           </div>
         </CardContent>
       </Card>
 
-      {/* Table / Empty */}
+      {/* Table */}
       {filteredEmployees.length === 0 ? (
         <Card>
-          <CardContent className="flex flex-col items-center justify-center py-16">
-            <Users className="h-16 w-16 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-semibold mb-2">No employees found</h3>
-            <p className="text-muted-foreground text-center mb-4">
-              Try adjusting your search or filters
+          <CardContent className="flex flex-col items-center py-16">
+            <Users className="h-14 w-14 text-muted-foreground mb-4" />
+            <h3 className="text-lg font-semibold">No employees found</h3>
+            <p className="text-muted-foreground">
+              Try adjusting your filters or search
             </p>
-            {canEdit && (
-              <Button onClick={handleOpenCreateModal}>
-                <Plus className="mr-2 h-4 w-4" />
-                Add Employee
-              </Button>
-            )}
           </CardContent>
         </Card>
       ) : (
-        <Card className=" p-0">
-            <CardContent className="p-0">
-              <EmployeesTable
-                employees={filteredEmployees}
-                canEdit={canEdit}
-                onView={(emp) => router.push(`/employees/${emp.id}`)}
-                onEdit={handleOpenEditModal}
-                onDelete={(emp) => setDeleteId(emp.id)}
-              />
-            </CardContent>
+        <Card className="p-0">
+          <CardContent className="p-0">
+            <EmployeesTable
+              employees={filteredEmployees}
+              canEdit={canEdit}
+              onView={(emp) => router.push(`/employees/${emp.id}`)}
+              onEdit={openEditModal}
+              onDelete={(emp) => setDeleteId(emp.id)}
+            />
+          </CardContent>
         </Card>
       )}
 
@@ -321,9 +319,9 @@ export default function EmployeesPage() {
       <EmployeeModal
         open={modalOpen}
         onOpenChange={setModalOpen}
-        onSuccess={handleModalSuccess}
         employee={selectedEmployee}
         mode={modalMode}
+        onSuccess={onModalSuccess}
       />
 
       {/* Delete Dialog */}
@@ -335,8 +333,7 @@ export default function EmployeesPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the
-              employee record.
+              This will permanently delete the employee record.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -344,7 +341,7 @@ export default function EmployeesPage() {
             <AlertDialogAction
               onClick={handleDelete}
               disabled={deleting}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="bg-destructive text-destructive-foreground"
             >
               {deleting ? "Deleting..." : "Delete"}
             </AlertDialogAction>

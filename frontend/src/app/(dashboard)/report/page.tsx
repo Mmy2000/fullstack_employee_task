@@ -220,7 +220,9 @@ export default function ReportPage() {
                       <TableCell>{employee.department_name}</TableCell>
                       <TableCell>{formatDate(employee.hired_on)}</TableCell>
                       <TableCell className="text-right">
-                        {employee.days_employed}
+                        {employee.days_employed && employee.days_employed > 0
+                          ? employee.days_employed
+                          : formatDate(employee.hired_on)}
                       </TableCell>
                     </TableRow>
                   ))}

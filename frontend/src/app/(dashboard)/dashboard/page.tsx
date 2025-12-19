@@ -10,7 +10,6 @@ import {
   Briefcase,
   UserCheck,
   Clock,
-  UserX,
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";

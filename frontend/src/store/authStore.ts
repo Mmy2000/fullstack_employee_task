@@ -35,6 +35,8 @@ export const useAuthStore = create<AuthState>((set) => ({
       localStorage.setItem('refresh_token', response.tokens.refresh);
       localStorage.setItem('user', JSON.stringify(response.user));
       
+      document.cookie = `access_token=${response.tokens.access}; path=/; max-age=${5 * 60 * 60}`; // 5 hours
+
       set({ 
         user: response.user, 
         isAuthenticated: true, 
@@ -67,6 +69,8 @@ export const useAuthStore = create<AuthState>((set) => ({
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('user');
+
+    document.cookie = 'access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
     set({ 
       user: null, 
       isAuthenticated: false, 

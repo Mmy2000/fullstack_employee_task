@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuthStore } from "@/store/authStore";
@@ -21,6 +21,7 @@ import { Loader2, Building2 } from "lucide-react";
 export default function LoginPage() {
   const router = useRouter();
   const { login, error, isLoading, clearError } = useAuthStore();
+
 
   const [formData, setFormData] = useState({
     email: "",
@@ -44,7 +45,7 @@ export default function LoginPage() {
       ...formData,
       [e.target.name]: e.target.value,
     });
-  };
+  };  
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
